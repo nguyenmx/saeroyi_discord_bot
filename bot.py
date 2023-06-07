@@ -1,6 +1,8 @@
 import discord
 import random
+import requests
 from discord.ext import commands
+from bs4 import BeautifulSoup
     
 my_pickup_list = []
 
@@ -15,6 +17,17 @@ def read_file(file_name, list):
 def pick_random(list):
    random_element = random.choice(list)
    return random_element
+
+# Scraping an image from Pinterest :clown: 
+def scrape_images(query):
+   search_url = 'https://www.pinterest.com/search/pins/?q={}'.format(query.replace(" ", "%20"))
+   response = requests.get(search_url)
+   scrape_web = BeautifulSoup(response.text, 'html.parser')
+   image_divs = scrape_web.find_all('div', {'class': 'GrowthUnauthPinImage'})
+   image_urls = [div.find('img')['src'] for div in image_divs]
+   random_image_url = random.choice(image_urls) if image_urls else None
+   return random_image_url
+
 
 read_file('pick_up_lines.txt', my_pickup_list)
 
@@ -35,10 +48,15 @@ async def rizz(ctx):
 
 @client.command()
 async def oppar(ctx):
-    await ctx.author.send("ello!")
+    image_query = "cute"  # Replace with the desired image search query
+    image_url = scrape_images(image_query)
+    if image_url:
+        await ctx.send(image_url)
+    else:
+        await ctx.send("No image found.")
+    
 
-
-client.run("MTExMzIyMTQ1NjIxMDQzNjIyOQ.GbECHT.UmKj6u81DduwbE7d0erAOIv7ie0AnAIW8X-oJg")
+client.run("MTExMzIyMTQ1NjIxMDQzNjIyOQ.Gq5eN_._DMltRP5DHjh0VuKcVFtu0jH457iWLhBF16NpQ")
 
 
 
