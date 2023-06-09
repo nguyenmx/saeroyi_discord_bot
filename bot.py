@@ -2,7 +2,7 @@ import discord
 import random
 import requests
 from discord.ext import commands
-from bs4 import BeautifulSoup
+import os
     
 my_pickup_list = []
 
@@ -18,19 +18,8 @@ def pick_random(list):
    random_element = random.choice(list)
    return random_element
 
-# Scraping an image from Pinterest :clown: 
-def scrape_images(query):
-   search_url = 'https://www.pinterest.com/search/pins/?q={}'.format(query.replace(" ", "%20"))
-   response = requests.get(search_url)
-   scrape_web = BeautifulSoup(response.text, 'html.parser')
-   image_divs = scrape_web.find_all('div', {'class': 'GrowthUnauthPinImage'})
-   image_urls = [div.find('img')['src'] for div in image_divs]
-   random_image_url = random.choice(image_urls) if image_urls else None
-   return random_image_url
-
 
 read_file('pick_up_lines.txt', my_pickup_list)
-
 
 client = commands.Bot(command_prefix = "=", intents=discord.Intents.all())
 
@@ -47,16 +36,33 @@ async def rizz(ctx):
     await ctx.send(pick_random(my_pickup_list))
 
 @client.command()
-async def oppar(ctx):
-    image_query = "cute"  # Replace with the desired image search query
-    image_url = scrape_images(image_query)
-    if image_url:
-        await ctx.send(image_url)
-    else:
-        await ctx.send("No image found.")
-    
+async def oppars(ctx):
+        # The path to the images
+        image_folder = "male_kdrama_actors"
 
-client.run("MTExMzIyMTQ1NjIxMDQzNjIyOQ.Gq5eN_._DMltRP5DHjh0VuKcVFtu0jH457iWLhBF16NpQ")
+        # Get a random image from the folder
+        # os.listdir(image_folder) returns a list of all the images under the folder
+        image_file = random.choice(os.listdir(image_folder))
+
+        # Construct the full path to the image
+        # Combines the image_folder path with the image_file name, you can see the URL on Discord
+        image_path = os.path.join(image_folder, image_file)
+
+        # Send the image as a file attachment
+        # Creates a file object from the image_path
+        sent_message = await ctx.send(file=discord.File(image_path))
+        await sent_message.add_reaction("❤️")
+
+@client.command()
+async def noonas(ctx):
+        image_folder = "female_kdrama_actors"
+        image_file = random.choice(os.listdir(image_folder))
+        image_path = os.path.join(image_folder, image_file)
+        sent_message = await ctx.send(file=discord.File(image_path))
+        await sent_message.add_reaction("❤️")
+
+client.run("")
+
 
 
 
